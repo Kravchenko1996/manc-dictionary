@@ -1,0 +1,2 @@
+# manc-dictionary
+Mancunian Dictionary
