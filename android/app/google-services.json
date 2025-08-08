@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807042146171",
+    "project_id": "manc-dictionary",
+    "storage_bucket": "manc-dictionary.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807042146171:android:dae32b083c521c270f27de",
+        "android_client_info": {
+          "package_name": "com.manc.dictionary"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXlwtONZuTZTah8S_cXMZJP066Ys0EOLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
