@@ -7,14 +7,7 @@ import 'package:manc_dictionary/view/widgets/dictionary_entry_card.dart';
 import 'package:manc_dictionary/view/widgets/search_field.dart';
 
 class DictionaryScreen extends StatefulWidget {
-  const DictionaryScreen({
-    super.key,
-    required this.onToggleTheme,
-    required this.isDark,
-  });
-
-  final VoidCallback onToggleTheme;
-  final bool isDark;
+  const DictionaryScreen({super.key});
 
   @override
   State<DictionaryScreen> createState() => _DictionaryScreenState();
@@ -35,12 +28,6 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manc Dictionary'),
-        actions: [
-          IconButton(
-            icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
-            onPressed: widget.onToggleTheme,
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
           child: SearchField(
@@ -70,21 +57,24 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             if (filteredDocs.isEmpty) {
               return const Center(child: Text('No dictionary entries found!'));
             }
-            return ListView.builder(
-              itemCount: filteredDocs.length,
-              itemBuilder: (context, index) {
-                final doc = filteredDocs[index];
-                final data = doc.data() as Map<String, dynamic>;
-                final entry = DictionaryEntry.fromJson({
-                  'phrase': data['phrase'] ?? 'No Phrase',
-                  'definition': data['definition'] ?? 'No Definition',
-                  'example': data['example'] ?? '',
-                });
-                return DictionaryEntryCard(
-                  id: doc.id,
-                  entry: entry,
-                );
-              },
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 60),
+              child: ListView.builder(
+                itemCount: filteredDocs.length,
+                itemBuilder: (context, index) {
+                  final doc = filteredDocs[index];
+                  final data = doc.data() as Map<String, dynamic>;
+                  final entry = DictionaryEntry.fromJson({
+                    'phrase': data['phrase'] ?? 'No Phrase',
+                    'definition': data['definition'] ?? 'No Definition',
+                    'example': data['example'] ?? '',
+                  });
+                  return DictionaryEntryCard(
+                    id: doc.id,
+                    entry: entry,
+                  );
+                },
+              ),
             );
           },
         ),
@@ -101,10 +91,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('New Dictionary Entry'),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: NewEntryWidget(),
-        ),
+        content: NewEntryWidget(),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

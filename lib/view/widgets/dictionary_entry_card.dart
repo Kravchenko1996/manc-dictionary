@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:manc_dictionary/models/dictionary_entry/dictionary_entry.dart';
+import 'package:manc_dictionary/service/dictionary_service.dart';
+import 'package:manc_dictionary/view/widgets/edit_entry_widget.dart';
 
 class DictionaryEntryCard extends StatelessWidget {
   const DictionaryEntryCard({
@@ -16,20 +17,49 @@ class DictionaryEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(id),
-      direction: DismissDirection.endToStart,
+      direction: DismissDirection.horizontal,
       background: Container(
+        color: Colors.blueAccent,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.edit, color: Colors.white),
+      ),
+      secondaryBackground: Container(
         color: Colors.redAccent,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      onDismissed: (direction) async {
-        await FirebaseFirestore.instance.collection('dictionaryEntries').doc(id).delete();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Entry deleted')),
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.endToStart) {
+          _showDeleteConfirmationDialog(
+            context,
+            entry.phrase,
+            () async {
+              await DictionaryService().deleteEntry(id);
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Entry deleted')),
+              );
+            },
           );
+        } else if (direction == DismissDirection.startToEnd) {
+          _showEditEntryDialog(
+            context,
+            entry.phrase,
+            entry.definition,
+            (phrase, definition, example) {
+              DictionaryService().updateEntry(id, phrase, definition, example);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Entry updated')),
+              );
+            },
+          );
+          return null;
         }
+        return null;
       },
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,6 +87,57 @@ class DictionaryEntryCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    String phrase,
+    Function onDelete,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Entry'),
+        content: Text('Are you sure you want to delete phrase "$phrase"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              onDelete();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditEntryDialog(
+    BuildContext context,
+    String initialPhrase,
+    String initialDefinition,
+    Function(String, String, String) onSave,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Entry'),
+        content: EditEntryWidget(
+          initialPhrase: initialPhrase,
+          initialDefinition: initialDefinition,
+          onSave: onSave,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }

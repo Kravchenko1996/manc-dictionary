@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:manc_dictionary/service/dictionary_service.dart';
+import 'package:manc_dictionary/view/widgets/entry_form_widget.dart';
 
 class NewEntryWidget extends StatefulWidget {
   const NewEntryWidget({super.key});
@@ -19,11 +20,7 @@ class _NewEntryWidgetState extends State<NewEntryWidget> {
     final example = _exampleController.text.trim();
     if (phrase.isEmpty || definition.isEmpty) return;
 
-    await FirebaseFirestore.instance.collection('dictionaryEntries').add({
-      'phrase': phrase,
-      'definition': definition,
-      'example': example,
-    });
+    DictionaryService().addEntry(phrase, definition, example);
 
     _phraseController.clear();
     _definitionController.clear();
@@ -32,43 +29,20 @@ class _NewEntryWidgetState extends State<NewEntryWidget> {
   }
 
   @override
+  void dispose() {
+    _phraseController.dispose();
+    _definitionController.dispose();
+    _exampleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _phraseController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Phrase'),
-              autofocus: true,
-              maxLines: null,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _definitionController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Definition'),
-              maxLines: null,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _exampleController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Example (optional)'),
-              maxLines: null,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _addEntry,
-              child: const Text('Add Entry'),
-            ),
-          ],
-        ),
-      ),
+    return EntryFormWidget(
+      phraseController: _phraseController,
+      definitionController: _definitionController,
+      exampleController: _exampleController,
+      onPressed: _addEntry,
     );
   }
 }
