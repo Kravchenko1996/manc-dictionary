@@ -46,7 +46,6 @@ class _EditEntryWidgetState extends State<EditEntryWidget> {
     final example = _exampleController.text.trim();
     if (phrase.isEmpty || definition.isEmpty) return;
     widget.onSave(phrase, definition, example);
-    Navigator.of(context).pop();
   }
 
   @override

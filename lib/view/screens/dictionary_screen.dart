@@ -92,12 +92,6 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       builder: (context) => AlertDialog(
         title: const Text('New Dictionary Entry'),
         content: NewEntryWidget(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }

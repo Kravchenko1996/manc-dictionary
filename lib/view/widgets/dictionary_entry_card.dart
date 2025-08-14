@@ -52,6 +52,7 @@ class DictionaryEntryCard extends StatelessWidget {
             entry.definition,
             (phrase, definition, example) {
               DictionaryService().updateEntry(id, phrase, definition, example);
+              Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Entry updated')),
               );
@@ -132,12 +133,6 @@ class DictionaryEntryCard extends StatelessWidget {
           initialDefinition: initialDefinition,
           onSave: onSave,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }
