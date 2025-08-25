@@ -18,6 +18,63 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   String _searchQuery = '';
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchAndShowWordOfTheDay();
+    });
+  }
+
+  Future<void> _fetchAndShowWordOfTheDay() async {
+    final dictionaryService = DictionaryService(); // Instantiate the service
+    try {
+      final DictionaryEntry? entry = await dictionaryService.getWordOfTheDay();
+      if (entry != null && mounted) {
+        _showWordOfTheDayDialog(entry);
+      } else if (mounted) {
+        // Optionally, show a different message if no word is found vs. an error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not load word of the day: No entries found.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not load word of the day: $e')),
+        );
+      }
+    }
+  }
+
+  void _showWordOfTheDayDialog(DictionaryEntry entry) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Word of the Day'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(entry.phrase, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 8),
+            Text(entry.definition),
+            if (entry.example!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text('Example: ${entry.example}', style: const TextStyle(fontStyle: FontStyle.italic)),
+            ]
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
