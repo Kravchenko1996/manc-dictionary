@@ -20,12 +20,13 @@ class _NewEntryWidgetState extends State<NewEntryWidget> {
     final example = _exampleController.text.trim();
     if (phrase.isEmpty || definition.isEmpty) return;
 
-    DictionaryService().addEntry(phrase, definition, example);
+   await DictionaryService().addEntry(phrase, definition, example);
 
     _phraseController.clear();
     _definitionController.clear();
     _exampleController.clear();
-    if (mounted) Navigator.of(context).pop();
+    int newEntryIndex = await DictionaryService().getEntryIndex(phrase);
+    if (mounted) Navigator.pop(context, newEntryIndex);
   }
 
   @override

@@ -35,4 +35,19 @@ class DictionaryService {
       'example': example,
     });
   }
+
+  Future<int> getEntryIndex(String phrase) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('dictionaryEntries')
+        .orderBy('phrase')
+        .get();
+
+    final documents = querySnapshot.docs;
+    for (int i = 0; i < documents.length; i++) {
+      if (documents[i].data()['phrase'] == phrase) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }

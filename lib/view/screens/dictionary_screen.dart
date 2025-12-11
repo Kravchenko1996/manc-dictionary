@@ -5,6 +5,7 @@ import 'package:manc_dictionary/view/widgets/new_entry_widget.dart';
 import 'package:manc_dictionary/models/dictionary_entry/dictionary_entry.dart';
 import 'package:manc_dictionary/view/widgets/dictionary_entry_card.dart';
 import 'package:manc_dictionary/view/widgets/search_field.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({super.key});
@@ -15,6 +16,8 @@ class DictionaryScreen extends StatefulWidget {
 
 class _DictionaryScreenState extends State<DictionaryScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ItemScrollController _itemScrollController = ItemScrollController();
+
   String _searchQuery = '';
 
   @override
@@ -57,24 +60,23 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             if (filteredDocs.isEmpty) {
               return const Center(child: Text('No dictionary entries found!'));
             }
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 60),
-              child: ListView.builder(
-                itemCount: filteredDocs.length,
-                itemBuilder: (context, index) {
-                  final doc = filteredDocs[index];
-                  final data = doc.data() as Map<String, dynamic>;
-                  final entry = DictionaryEntry.fromJson({
-                    'phrase': data['phrase'] ?? 'No Phrase',
-                    'definition': data['definition'] ?? 'No Definition',
-                    'example': data['example'] ?? '',
-                  });
-                  return DictionaryEntryCard(
-                    id: doc.id,
-                    entry: entry,
-                  );
-                },
-              ),
+            return ScrollablePositionedList.builder(
+              itemScrollController: _itemScrollController,
+              itemCount: filteredDocs.length,
+              padding: const EdgeInsets.only(bottom: 90),
+              itemBuilder: (context, index) {
+                final doc = filteredDocs[index];
+                final data = doc.data() as Map<String, dynamic>;
+                final entry = DictionaryEntry.fromJson({
+                  'phrase': data['phrase'] ?? 'No Phrase',
+                  'definition': data['definition'] ?? 'No Definition',
+                  'example': data['example'] ?? '',
+                });
+                return DictionaryEntryCard(
+                  id: doc.id,
+                  entry: entry,
+                );
+              },
             );
           },
         ),
@@ -93,6 +95,8 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
         title: const Text('New Dictionary Entry'),
         content: NewEntryWidget(),
       ),
-    );
+    ).then((index) {
+      _itemScrollController.scrollTo(index: index, duration: Duration(milliseconds: 300));
+    });
   }
 }

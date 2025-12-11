@@ -33,7 +33,7 @@ class DictionaryEntryCard extends StatelessWidget {
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.endToStart) {
-          _showDeleteConfirmationDialog(
+          await _showDeleteConfirmationDialog(
             context,
             entry.phrase,
             () async {
@@ -46,7 +46,7 @@ class DictionaryEntryCard extends StatelessWidget {
             },
           );
         } else if (direction == DismissDirection.startToEnd) {
-          _showEditEntryDialog(
+          await _showEditEntryDialog(
             context,
             entry.phrase,
             entry.definition,
@@ -92,12 +92,12 @@ class DictionaryEntryCard extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(
+  Future<void> _showDeleteConfirmationDialog(
     BuildContext context,
     String phrase,
     Function onDelete,
   ) {
-    showDialog(
+    return showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Entry'),
@@ -118,13 +118,13 @@ class DictionaryEntryCard extends StatelessWidget {
     );
   }
 
-  void _showEditEntryDialog(
+  Future<void> _showEditEntryDialog(
     BuildContext context,
     String initialPhrase,
     String initialDefinition,
     Function(String, String, String) onSave,
   ) {
-    showDialog(
+    return showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Edit Entry'),

@@ -50,7 +50,7 @@ class EntryFormWidget extends StatelessWidget {
                   maxLines: 5,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
+                OutlinedButton(
                   onPressed: onPressed,
                   child: const Text('Save Changes'),
                 ),
